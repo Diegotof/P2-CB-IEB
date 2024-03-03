@@ -1,0 +1,31 @@
+name: Despliegue a Azure App Service
+
+on:
+  push:
+    branches:
+      - main  # o la rama que uses para producción
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Asegúrate de ajustar esto según tu gestor de paquetes
+
+    - name: Construir y publicar la aplicación
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'Prueba-botIeb'  # Nombre de tu Azure App Service
+        slot-name: 'production'  # Opcional: especifica el slot, si lo usas
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Asegúrate de configurar este secreto en GitHub
+        package: '.'  # Ruta al directorio o archivo ZIP que deseas desplegar
